@@ -149,3 +149,48 @@ html, body {
   from { opacity: 0; transform: translateX(-50%) translateY(6px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
+
+
+/* ----------------------------------------------------------
+   Keys Panel — bottom-left shortcut guide (Branch 3)
+   ---------------------------------------------------------- */
+#keysPanel {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 10;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.key-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 2px 0;
+}
+
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+}
