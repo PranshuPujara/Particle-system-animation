@@ -1,10 +1,7 @@
 /* ============================================================
    main.js
-   Updated in Branch: physics-effects
-   Commit: "feat: keyboard shortcuts to toggle physics behaviors"
-
-   Added: keyboard listener to toggle each physics behavior
-   and display active physics in debug panel.
+   Updated in Branch: visual-enhancements
+   Commit: "feat: keyboard shortcuts for visual effects toggles"
    ============================================================ */
 
 
@@ -22,8 +19,10 @@ const dbgDelta   = document.getElementById('dbgDelta');
 const dbgPool    = document.getElementById('dbgPool');
 const dbgTotal   = document.getElementById('dbgTotal');
 const dbgHeld    = document.getElementById('dbgHeld');
-const dbgAngle   = document.getElementById('dbgAngle');
 const dbgPhysics = document.getElementById('dbgPhysics');
+const dbgVisuals = document.getElementById('dbgVisuals');
+const dbgBlend   = document.getElementById('dbgBlend');
+const dbgCurve   = document.getElementById('dbgCurve');
 
 setInterval(() => {
   const s = engine.stats;
@@ -33,27 +32,41 @@ setInterval(() => {
   dbgPool.textContent  = s.poolSize;
   dbgTotal.textContent = s.totalEmitted;
   dbgHeld.textContent  = input.isHeld ? 'yes' : 'no';
-  dbgAngle.textContent = (input.moveAngle * (180 / Math.PI)).toFixed(1) + '°';
 
-  // Show which physics behaviors are currently active
-  const cfg = CONFIG.physics;
-  const active = [];
-  if (cfg.gravityEnabled)  active.push(cfg.gravityStrength > 0 ? 'gravity' : 'anti-grav');
-  if (cfg.frictionEnabled) active.push('friction');
-  if (cfg.windEnabled)     active.push('wind');
-  if (cfg.spiralEnabled)   active.push('spiral');
-  dbgPhysics.textContent = active.length ? active.join(', ') : 'none';
+  const pc = CONFIG.physics;
+  const physActive = [];
+  if (pc.gravityEnabled)  physActive.push(pc.gravityStrength > 0 ? 'gravity' : 'anti-grav');
+  if (pc.frictionEnabled) physActive.push('friction');
+  if (pc.windEnabled)     physActive.push('wind');
+  if (pc.spiralEnabled)   physActive.push('spiral');
+  dbgPhysics.textContent = physActive.length ? physActive.join(', ') : 'none';
+
+  const vc = CONFIG.visuals;
+  const visActive = [];
+  if (vc.trailEnabled)    visActive.push('trail');
+  if (vc.glowEnabled)     visActive.push('glow');
+  if (vc.gradientEnabled) visActive.push('gradient');
+  dbgVisuals.textContent = visActive.length ? visActive.join(', ') : 'none';
+  dbgBlend.textContent   = vc.blendMode;
+  dbgCurve.textContent   = vc.opacityCurve;
 }, 80);
 
 
-/* ---- 3. Keyboard shortcuts to toggle physics ---- */
-// These let you hot-swap behaviors without touching config.js
+/* ---- 3. Keyboard shortcuts ---- */
 window.addEventListener('keydown', (e) => {
   switch (e.key.toLowerCase()) {
-    case 'g': Physics.toggleGravity();  break;  // G — gravity
-    case 'f': Physics.toggleFriction(); break;  // F — friction
-    case 'w': Physics.toggleWind();     break;  // W — wind
-    case 's': Physics.toggleSpiral();   break;  // S — spiral
-    case 'a': Physics.flipGravity();    break;  // A — flip gravity direction
+    // Physics (from Branch 3)
+    case 'g': Physics.toggleGravity();  break;
+    case 'f': Physics.toggleFriction(); break;
+    case 'w': Physics.toggleWind();     break;
+    case 's': Physics.toggleSpiral();   break;
+    case 'a': Physics.flipGravity();    break;
+
+    // Visuals (NEW in Branch 4)
+    case 't': Renderer.toggleTrail();       break;  // T — trail
+    case 'l': Renderer.toggleGlow();        break;  // L — glow (L for gLow)
+    case 'r': Renderer.toggleGradient();    break;  // R — gradient (R for Radial)
+    case 'b': Renderer.cycleBlendMode();    break;  // B — blend mode cycle
+    case 'o': Renderer.cycleOpacityCurve(); break;  // O — opacity curve cycle
   }
 });
