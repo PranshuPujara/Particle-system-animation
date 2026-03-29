@@ -1,39 +1,68 @@
 /* ============================================================
    main.js
-   Updated in Branch: optimization
-   Commit: "feat: show optimizer stats in debug panel"
+   Updated in Branch: themes-and-config
+   Commit: "feat: wire ThemeManager, build theme switcher UI"
    ============================================================ */
 
 
 /* ---- 1. Boot ---- */
-const canvas = document.getElementById('particleCanvas');
-const engine = new Engine(canvas);
-const input  = new InputHandler(canvas, engine.emitter);
+const canvas  = document.getElementById('particleCanvas');
+const engine  = new Engine(canvas);
+const input   = new InputHandler(canvas, engine.emitter);
+const themes  = new ThemeManager(engine.optimizer);   // ← NEW
+
 engine.setInput(input);
 engine.start();
 
 
-/* ---- 2. Debug panel ---- */
-const dbgCount       = document.getElementById('dbgCount');
-const dbgFPS         = document.getElementById('dbgFPS');
-const dbgDelta       = document.getElementById('dbgDelta');
-const dbgPool        = document.getElementById('dbgPool');
-const dbgTotal       = document.getElementById('dbgTotal');
-const dbgHeld        = document.getElementById('dbgHeld');
-const dbgSpeed       = document.getElementById('dbgSpeed');
-const dbgPhysics     = document.getElementById('dbgPhysics');
-const dbgVisuals     = document.getElementById('dbgVisuals');
-const dbgBlend       = document.getElementById('dbgBlend');
-const dbgCurve       = document.getElementById('dbgCurve');
-const dbgInteract    = document.getElementById('dbgInteract');
-const dbgEffCap      = document.getElementById('dbgEffCap');
-const dbgRealFPS     = document.getElementById('dbgRealFPS');
-const dbgCacheHit    = document.getElementById('dbgCacheHit');
-const dbgCacheSize   = document.getElementById('dbgCacheSize');
+/* ---- 2. Build theme switcher buttons dynamically ---- */
+const switcherEl = document.getElementById('themeSwitcher');
+
+ThemeManager.themeNames().forEach(name => {
+  const btn = document.createElement('button');
+  btn.className    = 'theme-btn';
+  btn.dataset.theme = name;
+  btn.textContent  = THEMES[name].label;
+
+  btn.addEventListener('click', () => {
+    themes.apply(name);
+  });
+
+  switcherEl.appendChild(btn);
+});
+
+// Highlight whichever theme is active when themechange fires
+window.addEventListener('themechange', (e) => {
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === e.detail.theme);
+  });
+});
+
+// Highlight default on load
+document.querySelector('[data-theme="default"]')?.classList.add('active');
+
+
+/* ---- 3. Debug panel ---- */
+const dbgCount     = document.getElementById('dbgCount');
+const dbgFPS       = document.getElementById('dbgFPS');
+const dbgDelta     = document.getElementById('dbgDelta');
+const dbgPool      = document.getElementById('dbgPool');
+const dbgTotal     = document.getElementById('dbgTotal');
+const dbgHeld      = document.getElementById('dbgHeld');
+const dbgSpeed     = document.getElementById('dbgSpeed');
+const dbgPhysics   = document.getElementById('dbgPhysics');
+const dbgVisuals   = document.getElementById('dbgVisuals');
+const dbgBlend     = document.getElementById('dbgBlend');
+const dbgCurve     = document.getElementById('dbgCurve');
+const dbgInteract  = document.getElementById('dbgInteract');
+const dbgEffCap    = document.getElementById('dbgEffCap');
+const dbgRealFPS   = document.getElementById('dbgRealFPS');
+const dbgCacheHit  = document.getElementById('dbgCacheHit');
+const dbgCacheSize = document.getElementById('dbgCacheSize');
+const dbgTheme     = document.getElementById('dbgTheme');
 
 setInterval(() => {
   const s = engine.stats;
-
   dbgCount.textContent   = s.activeCount;
   dbgFPS.textContent     = s.fps;
   dbgDelta.textContent   = s.deltaTime;
@@ -66,16 +95,15 @@ setInterval(() => {
   if (ic.speedEmitEnabled) intList.push('speed-emit');
   dbgInteract.textContent = intList.length ? intList.join(', ') : 'none';
 
-  // Optimizer stats ← NEW
   dbgEffCap.textContent    = s.effectiveCap;
   dbgRealFPS.textContent   = s.realFPS;
   dbgCacheHit.textContent  = s.cacheHitRate + '%';
   dbgCacheSize.textContent = s.cacheSize;
-
+  dbgTheme.textContent     = themes.activeTheme;   // ← NEW
 }, 80);
 
 
-/* ---- 3. Keyboard shortcuts ---- */
+/* ---- 4. Keyboard shortcuts ---- */
 window.addEventListener('keydown', (e) => {
   switch (e.key.toLowerCase()) {
     // Physics
@@ -94,5 +122,12 @@ window.addEventListener('keydown', (e) => {
     case 'q': Interactions.toggleAttract();   break;
     case 'e': Interactions.toggleRepulse();   break;
     case 'x': Interactions.toggleSpeedEmit(); break;
+    // Themes via number keys ← NEW
+    case '1': themes.apply('default'); break;
+    case '2': themes.apply('neon');    break;
+    case '3': themes.apply('fire');    break;
+    case '4': themes.apply('snow');    break;
+    case '5': themes.apply('galaxy');  break;
+    case '6': themes.apply('pastel');  break;
   }
 });
