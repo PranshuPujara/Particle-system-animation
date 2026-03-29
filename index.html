@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Particle Engine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <canvas id="particleCanvas"></canvas>
+
+  <div id="debugPanel">
+    <h3>Engine Stats</h3>
+    <div class="stat-row">Particles  <span id="dbgCount">0</span></div>
+    <div class="stat-row">FPS        <span id="dbgFPS">0</span></div>
+    <div class="stat-row">Delta      <span id="dbgDelta">0</span> ms</div>
+    <div class="stat-row">Pool size  <span id="dbgPool">0</span></div>
+    <div class="stat-row">Emitted    <span id="dbgTotal">0</span></div>
+  </div>
+
+  <div id="branchLabel">branch: basic-engine</div>
+
+  <div id="instructions">Move mouse to trail &nbsp;·&nbsp; Click to burst</div>
+
+  <!--
+    Load order matters:
+      1. config.js      — global CONFIG, rand() utility
+      2. Particle.js    — Particle class
+      3. ParticlePool.js — Pool (depends on Particle)
+      4. Emitter.js     — Emitter (depends on Pool + CONFIG)
+      5. Engine.js      — Engine (depends on all above)
+      6. main.js        — bootstrap, event listeners (depends on Engine)
+  -->
+  <script src="config.js"></script>
+  <script src="engine/Particle.js"></script>
+  <script src="engine/ParticlePool.js"></script>
+  <script src="engine/Emitter.js"></script>
+  <script src="engine/Engine.js"></script>
+  <script src="main.js"></script>
+
+</body>
+</html>
