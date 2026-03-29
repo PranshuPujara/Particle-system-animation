@@ -17,26 +17,32 @@
     <div class="stat-row">Delta      <span id="dbgDelta">0</span> ms</div>
     <div class="stat-row">Pool size  <span id="dbgPool">0</span></div>
     <div class="stat-row">Emitted    <span id="dbgTotal">0</span></div>
+    <div class="stat-row">Held       <span id="dbgHeld">no</span></div>
+    <div class="stat-row">Angle      <span id="dbgAngle">0°</span></div>
   </div>
 
-  <div id="branchLabel">branch: basic-engine</div>
+  <div id="branchLabel">branch: mouse-interaction</div>
 
-  <div id="instructions">Move mouse to trail &nbsp;·&nbsp; Click to burst</div>
+  <div id="instructions">
+    Move — trail &nbsp;·&nbsp; Click — burst &nbsp;·&nbsp; Hold — stream
+  </div>
 
   <!--
-    Load order matters:
-      1. config.js      — global CONFIG, rand() utility
-      2. Particle.js    — Particle class
-      3. ParticlePool.js — Pool (depends on Particle)
-      4. Emitter.js     — Emitter (depends on Pool + CONFIG)
-      5. Engine.js      — Engine (depends on all above)
-      6. main.js        — bootstrap, event listeners (depends on Engine)
+    Load order:
+      1. config.js        — CONFIG + rand()
+      2. Particle.js      — Particle class
+      3. ParticlePool.js  — Pool
+      4. Emitter.js       — Emitter (emit + emitDirectional)
+      5. Engine.js        — RAF loop
+      6. InputHandler.js  — All mouse/touch input   ← NEW
+      7. main.js          — Bootstrap
   -->
   <script src="config.js"></script>
   <script src="engine/Particle.js"></script>
   <script src="engine/ParticlePool.js"></script>
   <script src="engine/Emitter.js"></script>
   <script src="engine/Engine.js"></script>
+  <script src="engine/InputHandler.js"></script>
   <script src="main.js"></script>
 
 </body>
