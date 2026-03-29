@@ -152,12 +152,12 @@ html, body {
 
 
 /* ----------------------------------------------------------
-   Keys Panel — bottom-left shortcut guide (Branch 3)
+   Keys Panel — bottom-right shortcut guide (Branch 3)
    ---------------------------------------------------------- */
 #keysPanel {
   position: fixed;
   bottom: 16px;
-  left: 16px;
+  right: 16px;
   z-index: 10;
 
   background: var(--surface);
@@ -167,6 +167,9 @@ html, body {
 
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 .key-row {
