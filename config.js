@@ -1,10 +1,19 @@
 /* ============================================================
    config.js
-   Updated in Branch: optimization
-   Commit: "feat: add optimization config block"
+   Updated in Branch: themes-and-config
+   Commit: "feat: add activeTheme pointer to CONFIG"
+
+   One addition: CONFIG.activeTheme
+   ThemeManager reads this to know which preset is loaded.
+   Everything else is the default theme values (identical to B6).
    ============================================================ */
 
 const CONFIG = {
+
+  /* ---- Active theme (NEW in Branch 7) ---- */
+  // ThemeManager sets this when apply() is called.
+  // Useful for saving/restoring state, analytics, or UI highlighting.
+  activeTheme: 'default',
 
   /* ---- Particle limits ---- */
   maxParticles:     500,
@@ -78,30 +87,14 @@ const CONFIG = {
     speedThreshold:   30,
   },
 
-  /* ---- Optimization (NEW in Branch 6) ---- */
+  /* ---- Optimization ---- */
   optimization: {
-
-    // --- Adaptive particle cap ---
-    // Optimizer watches real FPS. If it drops below targetFPS,
-    // it lowers the effective particle cap automatically.
-    // When FPS recovers it raises the cap back up gradually.
-    adaptiveEnabled:  true,
-    targetFPS:        55,     // Try to stay at or above this
-
-    // --- Gradient cache ---
-    // createRadialGradient() is expensive. Without caching it runs
-    // once per particle per frame (~500×/frame = 30,000×/sec).
-    // The cache reuses gradient objects for particles with similar
-    // size + hue, making it nearly free after the first few frames.
+    adaptiveEnabled:      true,
+    targetFPS:            55,
     gradientCacheEnabled: true,
-    gradientCacheMax:     80,   // Max cached entries before eviction
-
-    // --- Off-screen culling ---
-    // Particles that have drifted outside the canvas are invisible.
-    // No point running physics + interactions on them.
-    // cullMargin lets edge-particles continue for a few px before being skipped.
-    cullOffscreen:    true,
-    cullMargin:       60,     // px outside canvas still considered "on screen"
+    gradientCacheMax:     80,
+    cullOffscreen:        true,
+    cullMargin:           60,
   },
 };
 
