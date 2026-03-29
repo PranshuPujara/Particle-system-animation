@@ -18,10 +18,12 @@
     <div class="stat-row">Pool size  <span id="dbgPool">0</span></div>
     <div class="stat-row">Emitted    <span id="dbgTotal">0</span></div>
     <div class="stat-row">Held       <span id="dbgHeld">no</span></div>
+    <div class="stat-row">Speed      <span id="dbgSpeed">0 px</span></div>
     <div class="stat-row">Physics    <span id="dbgPhysics">none</span></div>
     <div class="stat-row">Visuals    <span id="dbgVisuals">none</span></div>
     <div class="stat-row">Blend      <span id="dbgBlend">source-over</span></div>
     <div class="stat-row">Curve      <span id="dbgCurve">linear</span></div>
+    <div class="stat-row">Interact   <span id="dbgInteract">none</span></div>
   </div>
 
   <div id="keysPanel">
@@ -37,19 +39,26 @@
     <div class="key-row"><kbd>R</kbd> gradient</div>
     <div class="key-row"><kbd>B</kbd> blend mode</div>
     <div class="key-row"><kbd>O</kbd> opacity curve</div>
+    <div class="keys-section">Interactions</div>
+    <div class="key-row"><kbd>Q</kbd> attract</div>
+    <div class="key-row"><kbd>E</kbd> repulse</div>
+    <div class="key-row"><kbd>X</kbd> speed emit</div>
   </div>
 
-  <div id="branchLabel">branch: visual-enhancements</div>
+  <div id="branchLabel">branch: advanced-interactions</div>
+  <div id="instructions">Move — trail &nbsp;·&nbsp; Click — burst &nbsp;·&nbsp; Hold — stream</div>
 
-  <div id="instructions">
-    Move — trail &nbsp;·&nbsp; Click — burst &nbsp;·&nbsp; Hold — stream
-  </div>
-
+  <!--
+    Load order:
+      config.js → Particle → ParticlePool → Emitter → Physics
+      → Interactions → Renderer → Engine → InputHandler → main
+  -->
   <script src="config.js"></script>
   <script src="engine/Particle.js"></script>
   <script src="engine/ParticlePool.js"></script>
   <script src="engine/Emitter.js"></script>
   <script src="engine/Physics.js"></script>
+  <script src="engine/Interactions.js"></script>
   <script src="engine/Renderer.js"></script>
   <script src="engine/Engine.js"></script>
   <script src="engine/InputHandler.js"></script>
