@@ -24,6 +24,11 @@
     <div class="stat-row">Blend      <span id="dbgBlend">source-over</span></div>
     <div class="stat-row">Curve      <span id="dbgCurve">linear</span></div>
     <div class="stat-row">Interact   <span id="dbgInteract">none</span></div>
+    <h3 style="margin-top:10px;">Optimizer</h3>
+    <div class="stat-row">Real FPS   <span id="dbgRealFPS">0</span></div>
+    <div class="stat-row">Cap        <span id="dbgEffCap">500</span></div>
+    <div class="stat-row">Cache hit  <span id="dbgCacheHit">0%</span></div>
+    <div class="stat-row">Cache size <span id="dbgCacheSize">0</span></div>
   </div>
 
   <div id="keysPanel">
@@ -45,13 +50,12 @@
     <div class="key-row"><kbd>X</kbd> speed emit</div>
   </div>
 
-  <div id="branchLabel">branch: advanced-interactions</div>
+  <div id="branchLabel">branch: optimization</div>
   <div id="instructions">Move — trail &nbsp;·&nbsp; Click — burst &nbsp;·&nbsp; Hold — stream</div>
 
   <!--
-    Load order:
-      config.js → Particle → ParticlePool → Emitter → Physics
-      → Interactions → Renderer → Engine → InputHandler → main
+    Load order — Optimizer must load before Renderer and Engine
+    because both depend on it.
   -->
   <script src="config.js"></script>
   <script src="engine/Particle.js"></script>
@@ -59,6 +63,7 @@
   <script src="engine/Emitter.js"></script>
   <script src="engine/Physics.js"></script>
   <script src="engine/Interactions.js"></script>
+  <script src="engine/Optimizer.js"></script>
   <script src="engine/Renderer.js"></script>
   <script src="engine/Engine.js"></script>
   <script src="engine/InputHandler.js"></script>
