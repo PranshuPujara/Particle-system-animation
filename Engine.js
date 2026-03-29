@@ -1,13 +1,12 @@
 /* ============================================================
    engine/Engine.js
-   Updated in Branch: visual-enhancements
-   Commit: "feat: delegate rendering to Renderer class"
+   Updated in Branch: advanced-interactions
+   Commit: "feat: run Interactions.apply() per particle, wire setInput()"
 
-   Changes from Branch 3:
-     - Instantiates Renderer
-     - _render() replaced with two calls: renderer.clear() + renderer.drawAll()
-     - Engine no longer touches ctx directly for drawing
-   Everything else is identical to Branch 3.
+   Changes from Branch 4:
+     - Adds setInput() so Engine can read cursor state each frame
+     - Calls Interactions.apply(p, cursor) after Physics, before p.update()
+   Everything else is identical to Branch 4.
    ============================================================ */
 
 class Engine {
@@ -18,7 +17,12 @@ class Engine {
     this.pool     = new ParticlePool(CONFIG.maxParticles);
     this.active   = [];
     this.emitter  = new Emitter(this.pool, this.active);
-    this.renderer = new Renderer(canvas);   // ← NEW in Branch 4
+    this.renderer = new Renderer(canvas);
+
+    // Set after construction via engine.setInput(input)
+    // Avoids circular dependency — InputHandler needs emitter,
+    // Engine needs input — so neither can own the other at construction.
+    this._input = null;
 
     this._lastTimestamp = 0;
     this._deltaTime     = 0;
@@ -31,6 +35,11 @@ class Engine {
 
     this._resize();
     window.addEventListener('resize', () => this._resize());
+  }
+
+  /* setInput() — called from main.js after both objects are created */
+  setInput(inputHandler) {
+    this._input = inputHandler;
   }
 
   start() {
@@ -64,17 +73,25 @@ class Engine {
     }
 
     this._update();
-    this._render();   // ← now delegates to Renderer
+    this._render();
     this._rafId = requestAnimationFrame(ts => this._loop(ts));
   }
 
   _update() {
+    // Fetch cursor state once per frame — not once per particle
+    const cursor = this._input
+      ? this._input.cursor
+      : { x: -9999, y: -9999, speed: 0 };
+
     for (let i = 0; i < this.active.length; i++) {
       const p = this.active[i];
-      Physics.apply(p);
-      p.update();
+
+      Physics.apply(p);              // 1. Environmental forces (gravity, wind…)
+      Interactions.apply(p, cursor); // 2. Cursor forces ← NEW in Branch 5
+      p.update();                    // 3. Integrate everything → position
     }
 
+    // Swap-and-pop cleanup
     let i = 0;
     while (i < this.active.length) {
       if (!this.active[i].alive) {
@@ -86,12 +103,9 @@ class Engine {
     }
   }
 
-  /* _render()
-     Engine no longer knows HOW to draw — it just triggers the Renderer.
-     This keeps Engine focused purely on the loop and simulation. */
   _render() {
-    this.renderer.clear();              // Handles trail vs full clear
-    this.renderer.drawAll(this.active); // Draws all live particles
+    this.renderer.clear();
+    this.renderer.drawAll(this.active);
   }
 
   get stats() {
