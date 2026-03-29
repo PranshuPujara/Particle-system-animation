@@ -1,27 +1,27 @@
 /* ============================================================
    engine/Engine.js
-   Updated in Branch: advanced-interactions
-   Commit: "feat: run Interactions.apply() per particle, wire setInput()"
+   Updated in Branch: optimization
+   Commit: "feat: wire Optimizer — frame recording, adaptive cap, offscreen cull"
 
-   Changes from Branch 4:
-     - Adds setInput() so Engine can read cursor state each frame
-     - Calls Interactions.apply(p, cursor) after Physics, before p.update()
-   Everything else is identical to Branch 4.
+   Changes from Branch 5:
+     - Instantiates Optimizer
+     - Passes optimizer to Renderer (for gradient cache)
+     - Records each frame timestamp to Optimizer
+     - Reads effective cap from Optimizer in _update()
+     - Skips physics + interactions for off-screen particles (cull)
    ============================================================ */
 
 class Engine {
   constructor(canvas) {
-    this.canvas   = canvas;
-    this.ctx      = canvas.getContext('2d');
+    this.canvas    = canvas;
+    this.ctx       = canvas.getContext('2d');
 
-    this.pool     = new ParticlePool(CONFIG.maxParticles);
-    this.active   = [];
-    this.emitter  = new Emitter(this.pool, this.active);
-    this.renderer = new Renderer(canvas);
+    this.optimizer = new Optimizer();                       // ← NEW
+    this.pool      = new ParticlePool(CONFIG.maxParticles);
+    this.active    = [];
+    this.emitter   = new Emitter(this.pool, this.active);
+    this.renderer  = new Renderer(canvas, this.optimizer); // ← pass optimizer
 
-    // Set after construction via engine.setInput(input)
-    // Avoids circular dependency — InputHandler needs emitter,
-    // Engine needs input — so neither can own the other at construction.
     this._input = null;
 
     this._lastTimestamp = 0;
@@ -37,7 +37,6 @@ class Engine {
     window.addEventListener('resize', () => this._resize());
   }
 
-  /* setInput() — called from main.js after both objects are created */
   setInput(inputHandler) {
     this._input = inputHandler;
   }
@@ -61,6 +60,9 @@ class Engine {
   _loop(timestamp) {
     if (!this._running) return;
 
+    // Record frame time to Optimizer FIRST — before any work this frame
+    this.optimizer.recordFrame(timestamp);    // ← NEW
+
     this._deltaTime     = timestamp - this._lastTimestamp;
     this._lastTimestamp = timestamp;
 
@@ -78,17 +80,42 @@ class Engine {
   }
 
   _update() {
-    // Fetch cursor state once per frame — not once per particle
     const cursor = this._input
       ? this._input.cursor
       : { x: -9999, y: -9999, speed: 0 };
 
+    // Ask Optimizer for the current safe particle cap ← NEW
+    const cap = this.optimizer.getEffectiveCap();
+
+    // Off-screen cull bounds ← NEW
+    const cfg    = CONFIG.optimization;
+    const margin = cfg.cullMargin;
+    const W      = this.canvas.width;
+    const H      = this.canvas.height;
+
     for (let i = 0; i < this.active.length; i++) {
       const p = this.active[i];
 
-      Physics.apply(p);              // 1. Environmental forces (gravity, wind…)
-      Interactions.apply(p, cursor); // 2. Cursor forces ← NEW in Branch 5
-      p.update();                    // 3. Integrate everything → position
+      // Off-screen culling — skip expensive work for invisible particles.
+      // The particle still ages (p.update() runs) so it dies on schedule,
+      // but we skip physics + interactions to save CPU.
+      const offscreen = cfg.cullOffscreen && (
+        p.x < -margin || p.x > W + margin ||
+        p.y < -margin || p.y > H + margin
+      );
+
+      if (!offscreen) {
+        Physics.apply(p);
+        Interactions.apply(p, cursor);
+      }
+
+      p.update();   // Always runs — particle must age even off-screen
+
+      // Hard-kill particles that exceed the adaptive cap
+      // This prevents cap reduction from leaving phantom over-cap particles
+      if (i >= cap) {
+        p.alive = false;
+      }
     }
 
     // Swap-and-pop cleanup
@@ -110,11 +137,15 @@ class Engine {
 
   get stats() {
     return {
-      activeCount:  this.active.length,
-      fps:          this._fps,
-      deltaTime:    Math.round(this._deltaTime),
-      poolSize:     this.pool.size,
-      totalEmitted: this.emitter.totalEmitted,
+      activeCount:   this.active.length,
+      fps:           this._fps,
+      deltaTime:     Math.round(this._deltaTime),
+      poolSize:      this.pool.size,
+      totalEmitted:  this.emitter.totalEmitted,
+      effectiveCap:  this.optimizer.effectiveCap,      // ← NEW
+      realFPS:       this.optimizer.fps,               // ← NEW
+      cacheHitRate:  this.optimizer.cacheHitRate,      // ← NEW
+      cacheSize:     this.optimizer.cacheSize,         // ← NEW
     };
   }
 }
