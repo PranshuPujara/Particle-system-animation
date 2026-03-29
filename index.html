@@ -18,20 +18,28 @@
     <div class="stat-row">Pool size  <span id="dbgPool">0</span></div>
     <div class="stat-row">Emitted    <span id="dbgTotal">0</span></div>
     <div class="stat-row">Held       <span id="dbgHeld">no</span></div>
-    <div class="stat-row">Angle      <span id="dbgAngle">0°</span></div>
     <div class="stat-row">Physics    <span id="dbgPhysics">none</span></div>
+    <div class="stat-row">Visuals    <span id="dbgVisuals">none</span></div>
+    <div class="stat-row">Blend      <span id="dbgBlend">source-over</span></div>
+    <div class="stat-row">Curve      <span id="dbgCurve">linear</span></div>
   </div>
 
-  <!-- Keyboard shortcut guide — NEW in Branch 3 -->
   <div id="keysPanel">
+    <div class="keys-section">Physics</div>
     <div class="key-row"><kbd>G</kbd> gravity</div>
     <div class="key-row"><kbd>F</kbd> friction</div>
     <div class="key-row"><kbd>W</kbd> wind</div>
     <div class="key-row"><kbd>S</kbd> spiral</div>
     <div class="key-row"><kbd>A</kbd> flip gravity</div>
+    <div class="keys-section">Visuals</div>
+    <div class="key-row"><kbd>T</kbd> trail</div>
+    <div class="key-row"><kbd>L</kbd> glow</div>
+    <div class="key-row"><kbd>R</kbd> gradient</div>
+    <div class="key-row"><kbd>B</kbd> blend mode</div>
+    <div class="key-row"><kbd>O</kbd> opacity curve</div>
   </div>
 
-  <div id="branchLabel">branch: physics-effects</div>
+  <div id="branchLabel">branch: visual-enhancements</div>
 
   <div id="instructions">
     Move — trail &nbsp;·&nbsp; Click — burst &nbsp;·&nbsp; Hold — stream
@@ -42,6 +50,7 @@
   <script src="engine/ParticlePool.js"></script>
   <script src="engine/Emitter.js"></script>
   <script src="engine/Physics.js"></script>
+  <script src="engine/Renderer.js"></script>
   <script src="engine/Engine.js"></script>
   <script src="engine/InputHandler.js"></script>
   <script src="main.js"></script>
