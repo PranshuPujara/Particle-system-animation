@@ -1,49 +1,56 @@
 /* ============================================================
    config.js
-   Branch: basic-engine
-   Commit: "feat: central config object and rand() utility"
-
-   Every tuneable number lives here — zero magic numbers in
-   engine files. Branch 7 (themes-and-config) will expand
-   this into a full theme/preset system.
+   Updated in Branch: mouse-interaction
+   Commit: "feat: add mouse interaction config settings"
    ============================================================ */
 
 const CONFIG = {
-  // ---- Particle limits ----
-  maxParticles:    500,   // Hard cap on live particles at any time
 
-  // ---- Emission ----
-  emitRate:        8,     // Particles spawned per mousemove event
-  burstCount:      40,    // Particles spawned on click
+  /* ---- Particle limits ---- */
+  maxParticles:     500,
 
-  // ---- Lifetime (frames) ----
-  baseLifetime:    120,   // At 60fps this is ~2 seconds
-  lifetimeVariance: 60,   // ± random range added to baseLifetime
+  /* ---- Emission ---- */
+  emitRate:         6,      // Particles per mousemove event (trail)
+  burstCount:       45,     // Particles on click
+  holdEmitRate:     3,      // Particles per frame while mouse held down
 
-  // ---- Speed ----
-  baseSpeed:       2.5,   // Emission velocity magnitude
-  speedVariance:   1.5,   // ± random range added to baseSpeed
+  /* ---- Lifetime (frames at 60fps) ---- */
+  baseLifetime:     120,
+  lifetimeVariance: 60,
 
-  // ---- Size (radius in px) ----
-  baseSize:        4,
-  sizeVariance:    3,
+  /* ---- Speed ---- */
+  baseSpeed:        2.5,
+  speedVariance:    1.5,
 
-  // ---- Color ----
-  // HSL lets us shift hue easily for themes
-  color: {
-    h: 160,               // Hue   (160 = teal-green)
-    s: 70,                // Saturation %
-    l: 65,                // Lightness %
+  /* ---- Size (radius px) ---- */
+  baseSize:         4,
+  sizeVariance:     3,
+
+  /* ---- Color ---- */
+  color: { h: 160, s: 70, l: 65 },
+  colorVariance: 40,
+
+  /* ---- Mouse interaction (NEW in Branch 2) ---- */
+  mouse: {
+    trailEnabled:     true,   // mousemove  → particle trail
+    burstEnabled:     true,   // click      → burst explosion
+    holdEnabled:      true,   // mousedown  → continuous stream
+
+    // Minimum px mouse must move before emitting trail particles.
+    // Prevents particle flood when mouse is nearly still.
+    minMoveDistance:  4,
+
+    // Burst speed multiplier relative to baseSpeed
+    burstSpeedMult:   2.8,
+
+    // Hold stream: narrow cone pointing away from movement direction
+    holdSpreadAngle:  Math.PI / 3,   // 60° cone
   },
-  colorVariance: 40,      // ± hue shift per particle
 };
 
 
 /* ============================================================
-   Utility: rand(min, max)
-   Returns a random float in [min, max).
-   Lives in config.js because every engine file needs it and
-   it has no dependencies of its own.
+   Utility: rand(min, max) — float in [min, max)
    ============================================================ */
 function rand(min, max) {
   return Math.random() * (max - min) + min;
