@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Particle Engine</title>
+  <title>Particula</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <canvas id="particleCanvas"></canvas>
 
+  <!-- Debug Panel -->
   <div id="debugPanel">
     <h3>Engine Stats</h3>
     <div class="stat-row">Particles  <span id="dbgCount">0</span></div>
@@ -29,8 +30,11 @@
     <div class="stat-row">Cap        <span id="dbgEffCap">500</span></div>
     <div class="stat-row">Cache hit  <span id="dbgCacheHit">0%</span></div>
     <div class="stat-row">Cache size <span id="dbgCacheSize">0</span></div>
+    <h3 style="margin-top:10px;">Theme</h3>
+    <div class="stat-row">Active     <span id="dbgTheme">default</span></div>
   </div>
 
+  <!-- Keys Panel -->
   <div id="keysPanel">
     <div class="keys-section">Physics</div>
     <div class="key-row"><kbd>G</kbd> gravity</div>
@@ -48,25 +52,39 @@
     <div class="key-row"><kbd>Q</kbd> attract</div>
     <div class="key-row"><kbd>E</kbd> repulse</div>
     <div class="key-row"><kbd>X</kbd> speed emit</div>
+    <div class="keys-section">Themes</div>
+    <div class="key-row"><kbd>1</kbd> default</div>
+    <div class="key-row"><kbd>2</kbd> neon</div>
+    <div class="key-row"><kbd>3</kbd> fire</div>
+    <div class="key-row"><kbd>4</kbd> snow</div>
+    <div class="key-row"><kbd>5</kbd> galaxy</div>
+    <div class="key-row"><kbd>6</kbd> pastel</div>
   </div>
 
-  <div id="branchLabel">branch: optimization</div>
+  <!-- Theme Switcher — buttons injected by main.js -->
+  <div id="themeSwitcher"></div>
+
+  <div id="branchLabel">particula — v1.0</div>
   <div id="instructions">Move — trail &nbsp;·&nbsp; Click — burst &nbsp;·&nbsp; Hold — stream</div>
 
   <!--
-    Load order — Optimizer must load before Renderer and Engine
-    because both depend on it.
+    Final load order:
+      config → Particle → ParticlePool → Emitter → Physics
+      → Interactions → Optimizer → Renderer → Engine
+      → InputHandler → themes → ThemeManager → main
   -->
   <script src="config.js"></script>
-  <script src="engine/Particle.js"></script>
-  <script src="engine/ParticlePool.js"></script>
-  <script src="engine/Emitter.js"></script>
-  <script src="engine/Physics.js"></script>
-  <script src="engine/Interactions.js"></script>
-  <script src="engine/Optimizer.js"></script>
-  <script src="engine/Renderer.js"></script>
-  <script src="engine/Engine.js"></script>
-  <script src="engine/InputHandler.js"></script>
+  <script src="Particle.js"></script>
+  <script src="ParticlePool.js"></script>
+  <script src="Emitter.js"></script>
+  <script src="Physics.js"></script>
+  <script src="Interactions.js"></script>
+  <script src="Optimizer.js"></script>
+  <script src="Renderer.js"></script>
+  <script src="Engine.js"></script>
+  <script src="InputHandler.js"></script>
+  <script src="themes.js"></script>
+  <script src="ThemeManager.js"></script>
   <script src="main.js"></script>
 
 </body>
