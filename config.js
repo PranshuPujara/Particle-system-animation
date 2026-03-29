@@ -1,7 +1,7 @@
 /* ============================================================
    config.js
-   Updated in Branch: mouse-interaction
-   Commit: "feat: add mouse interaction config settings"
+   Updated in Branch: physics-effects
+   Commit: "feat: add physics config block"
    ============================================================ */
 
 const CONFIG = {
@@ -10,9 +10,9 @@ const CONFIG = {
   maxParticles:     500,
 
   /* ---- Emission ---- */
-  emitRate:         6,      // Particles per mousemove event (trail)
-  burstCount:       45,     // Particles on click
-  holdEmitRate:     3,      // Particles per frame while mouse held down
+  emitRate:         6,
+  burstCount:       45,
+  holdEmitRate:     3,
 
   /* ---- Lifetime (frames at 60fps) ---- */
   baseLifetime:     120,
@@ -30,27 +30,44 @@ const CONFIG = {
   color: { h: 160, s: 70, l: 65 },
   colorVariance: 40,
 
-  /* ---- Mouse interaction (NEW in Branch 2) ---- */
+  /* ---- Mouse interaction ---- */
   mouse: {
-    trailEnabled:     true,   // mousemove  → particle trail
-    burstEnabled:     true,   // click      → burst explosion
-    holdEnabled:      true,   // mousedown  → continuous stream
-
-    // Minimum px mouse must move before emitting trail particles.
-    // Prevents particle flood when mouse is nearly still.
+    trailEnabled:     true,
+    burstEnabled:     true,
+    holdEnabled:      true,
     minMoveDistance:  4,
-
-    // Burst speed multiplier relative to baseSpeed
     burstSpeedMult:   2.8,
+    holdSpreadAngle:  Math.PI / 3,
+  },
 
-    // Hold stream: narrow cone pointing away from movement direction
-    holdSpreadAngle:  Math.PI / 3,   // 60° cone
+  /* ---- Physics (NEW in Branch 3) ---- */
+  physics: {
+
+    // --- Gravity ---
+    // Positive = pulls down, negative = floats up (anti-gravity)
+    gravityEnabled:   false,
+    gravityStrength:  0.08,   // Added to vy each frame
+
+    // --- Friction / drag ---
+    // Multiplies velocity each frame. 1.0 = no drag, 0.95 = gentle drag
+    frictionEnabled:  false,
+    frictionAmount:   0.97,
+
+    // --- Wind ---
+    // Constant horizontal acceleration (positive = rightward)
+    windEnabled:      false,
+    windStrength:     0.04,
+
+    // --- Spiral ---
+    // Rotates the velocity vector by a small angle each frame
+    spiralEnabled:    false,
+    spiralSpeed:      0.04,   // Radians per frame
   },
 };
 
 
 /* ============================================================
-   Utility: rand(min, max) — float in [min, max)
+   Utility: rand(min, max)
    ============================================================ */
 function rand(min, max) {
   return Math.random() * (max - min) + min;
