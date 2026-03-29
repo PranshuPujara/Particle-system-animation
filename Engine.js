@@ -1,21 +1,24 @@
 /* ============================================================
    engine/Engine.js
-   Updated in Branch: physics-effects
-   Commit: "feat: run Physics.apply() on each particle in update loop"
+   Updated in Branch: visual-enhancements
+   Commit: "feat: delegate rendering to Renderer class"
 
-   One line changed in _update():
-     Physics.apply(p) is called before p.update()
-   Everything else is identical to Branch 2.
+   Changes from Branch 3:
+     - Instantiates Renderer
+     - _render() replaced with two calls: renderer.clear() + renderer.drawAll()
+     - Engine no longer touches ctx directly for drawing
+   Everything else is identical to Branch 3.
    ============================================================ */
 
 class Engine {
   constructor(canvas) {
-    this.canvas  = canvas;
-    this.ctx     = canvas.getContext('2d');
+    this.canvas   = canvas;
+    this.ctx      = canvas.getContext('2d');
 
-    this.pool    = new ParticlePool(CONFIG.maxParticles);
-    this.active  = [];
-    this.emitter = new Emitter(this.pool, this.active);
+    this.pool     = new ParticlePool(CONFIG.maxParticles);
+    this.active   = [];
+    this.emitter  = new Emitter(this.pool, this.active);
+    this.renderer = new Renderer(canvas);   // ← NEW in Branch 4
 
     this._lastTimestamp = 0;
     this._deltaTime     = 0;
@@ -49,8 +52,8 @@ class Engine {
   _loop(timestamp) {
     if (!this._running) return;
 
-    this._deltaTime      = timestamp - this._lastTimestamp;
-    this._lastTimestamp  = timestamp;
+    this._deltaTime     = timestamp - this._lastTimestamp;
+    this._lastTimestamp = timestamp;
 
     this._frameCount++;
     this._fpsAccum += this._deltaTime;
@@ -61,23 +64,17 @@ class Engine {
     }
 
     this._update();
-    this._render();
+    this._render();   // ← now delegates to Renderer
     this._rafId = requestAnimationFrame(ts => this._loop(ts));
   }
 
   _update() {
     for (let i = 0; i < this.active.length; i++) {
       const p = this.active[i];
-
-      // ← NEW in Branch 3: apply physics before integrating position
-      // Physics sets ax/ay (and may directly modify vx/vy for friction).
-      // Then p.update() integrates everything and resets ax/ay to 0.
       Physics.apply(p);
-
       p.update();
     }
 
-    // Swap-and-pop cleanup (unchanged)
     let i = 0;
     while (i < this.active.length) {
       if (!this.active[i].alive) {
@@ -89,19 +86,12 @@ class Engine {
     }
   }
 
+  /* _render()
+     Engine no longer knows HOW to draw — it just triggers the Renderer.
+     This keeps Engine focused purely on the loop and simulation. */
   _render() {
-    const ctx = this.ctx;
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    for (const p of this.active) {
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, Math.min(1, p.opacity));
-      ctx.fillStyle   = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
+    this.renderer.clear();              // Handles trail vs full clear
+    this.renderer.drawAll(this.active); // Draws all live particles
   }
 
   get stats() {
