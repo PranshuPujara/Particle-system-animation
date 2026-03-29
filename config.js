@@ -1,7 +1,7 @@
 /* ============================================================
    config.js
-   Updated in Branch: visual-enhancements
-   Commit: "feat: add visuals config block"
+   Updated in Branch: advanced-interactions
+   Commit: "feat: add interactions config block"
    ============================================================ */
 
 const CONFIG = {
@@ -30,7 +30,7 @@ const CONFIG = {
   color: { h: 160, s: 70, l: 65 },
   colorVariance: 40,
 
-  /* ---- Mouse interaction ---- */
+  /* ---- Mouse ---- */
   mouse: {
     trailEnabled:     true,
     burstEnabled:     true,
@@ -52,39 +52,40 @@ const CONFIG = {
     spiralSpeed:      0.04,
   },
 
-  /* ---- Visuals (NEW in Branch 4) ---- */
+  /* ---- Visuals ---- */
   visuals: {
-
-    // --- Motion trail ---
-    // Instead of clearing canvas fully, paint a semi-transparent
-    // black rect each frame — old particles "ghost" into a trail.
-    // trailAlpha: 1.0 = full clear (no trail), 0.1 = long trail
     trailEnabled:     false,
     trailAlpha:       0.18,
-
-    // --- Glow ---
-    // Uses canvas shadowBlur to paint a soft halo around each particle.
     glowEnabled:      false,
-    glowBlur:         18,       // shadowBlur radius in px
-    glowAlpha:        0.8,      // Glow opacity (separate from particle opacity)
-
-    // --- Gradient fill ---
-    // Each particle is filled with a radial gradient instead of flat color.
-    // Center: full color. Edge: transparent.
+    glowBlur:         18,
+    glowAlpha:        0.8,
     gradientEnabled:  false,
-
-    // --- Opacity curve ---
-    // 'linear'  — default, fades steadily
-    // 'easeIn'  — stays bright, drops fast at end
-    // 'easeOut' — fades fast at start, holds near end
-    // 'pulse'   — oscillates opacity over lifetime
     opacityCurve:     'linear',
-
-    // --- Blend mode ---
-    // 'source-over' = normal (default)
-    // 'lighter'     = additive — particles add light where they overlap
-    // 'screen'      = like lighter but softer — great for neon
     blendMode:        'source-over',
+  },
+
+  /* ---- Interactions (NEW in Branch 5) ---- */
+  interactions: {
+
+    // --- Attraction ---
+    // Particles within radius are pulled toward the cursor.
+    attractEnabled:   false,
+    attractRadius:    150,    // px — how far the force reaches
+    attractStrength:  0.15,   // Force magnitude (higher = snappier pull)
+
+    // --- Repulsion ---
+    // Particles within radius are pushed away from the cursor.
+    repulseEnabled:   false,
+    repulseRadius:    120,    // px
+    repulseStrength:  0.25,   // Higher = more explosive push
+
+    // --- Speed-based emission ---
+    // Emit MORE particles when mouse moves fast, fewer when slow.
+    // Replaces the flat CONFIG.emitRate for trail emission.
+    speedEmitEnabled: false,
+    speedEmitMin:     1,      // Minimum particles when mouse barely moves
+    speedEmitMax:     20,     // Maximum particles at full speed
+    speedThreshold:   30,     // px/move considered "maximum speed"
   },
 };
 
