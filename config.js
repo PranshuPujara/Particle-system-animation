@@ -1,7 +1,7 @@
 /* ============================================================
    config.js
-   Updated in Branch: advanced-interactions
-   Commit: "feat: add interactions config block"
+   Updated in Branch: optimization
+   Commit: "feat: add optimization config block"
    ============================================================ */
 
 const CONFIG = {
@@ -64,28 +64,44 @@ const CONFIG = {
     blendMode:        'source-over',
   },
 
-  /* ---- Interactions (NEW in Branch 5) ---- */
+  /* ---- Interactions ---- */
   interactions: {
-
-    // --- Attraction ---
-    // Particles within radius are pulled toward the cursor.
     attractEnabled:   false,
-    attractRadius:    150,    // px — how far the force reaches
-    attractStrength:  0.15,   // Force magnitude (higher = snappier pull)
-
-    // --- Repulsion ---
-    // Particles within radius are pushed away from the cursor.
+    attractRadius:    150,
+    attractStrength:  0.15,
     repulseEnabled:   false,
-    repulseRadius:    120,    // px
-    repulseStrength:  0.25,   // Higher = more explosive push
-
-    // --- Speed-based emission ---
-    // Emit MORE particles when mouse moves fast, fewer when slow.
-    // Replaces the flat CONFIG.emitRate for trail emission.
+    repulseRadius:    120,
+    repulseStrength:  0.25,
     speedEmitEnabled: false,
-    speedEmitMin:     1,      // Minimum particles when mouse barely moves
-    speedEmitMax:     20,     // Maximum particles at full speed
-    speedThreshold:   30,     // px/move considered "maximum speed"
+    speedEmitMin:     1,
+    speedEmitMax:     20,
+    speedThreshold:   30,
+  },
+
+  /* ---- Optimization (NEW in Branch 6) ---- */
+  optimization: {
+
+    // --- Adaptive particle cap ---
+    // Optimizer watches real FPS. If it drops below targetFPS,
+    // it lowers the effective particle cap automatically.
+    // When FPS recovers it raises the cap back up gradually.
+    adaptiveEnabled:  true,
+    targetFPS:        55,     // Try to stay at or above this
+
+    // --- Gradient cache ---
+    // createRadialGradient() is expensive. Without caching it runs
+    // once per particle per frame (~500×/frame = 30,000×/sec).
+    // The cache reuses gradient objects for particles with similar
+    // size + hue, making it nearly free after the first few frames.
+    gradientCacheEnabled: true,
+    gradientCacheMax:     80,   // Max cached entries before eviction
+
+    // --- Off-screen culling ---
+    // Particles that have drifted outside the canvas are invisible.
+    // No point running physics + interactions on them.
+    // cullMargin lets edge-particles continue for a few px before being skipped.
+    cullOffscreen:    true,
+    cullMargin:       60,     // px outside canvas still considered "on screen"
   },
 };
 
