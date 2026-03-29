@@ -194,3 +194,24 @@ kbd {
   font-size: 10px;
   color: var(--accent);
 }
+
+
+/* ----------------------------------------------------------
+   Keys panel section divider (Branch 4)
+   ---------------------------------------------------------- */
+.keys-section {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+  margin-top: 8px;
+  margin-bottom: 2px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.keys-section:first-child {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
