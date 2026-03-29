@@ -1,7 +1,7 @@
 /* ============================================================
    config.js
-   Updated in Branch: physics-effects
-   Commit: "feat: add physics config block"
+   Updated in Branch: visual-enhancements
+   Commit: "feat: add visuals config block"
    ============================================================ */
 
 const CONFIG = {
@@ -40,28 +40,51 @@ const CONFIG = {
     holdSpreadAngle:  Math.PI / 3,
   },
 
-  /* ---- Physics (NEW in Branch 3) ---- */
+  /* ---- Physics ---- */
   physics: {
-
-    // --- Gravity ---
-    // Positive = pulls down, negative = floats up (anti-gravity)
     gravityEnabled:   false,
-    gravityStrength:  0.08,   // Added to vy each frame
-
-    // --- Friction / drag ---
-    // Multiplies velocity each frame. 1.0 = no drag, 0.95 = gentle drag
+    gravityStrength:  0.08,
     frictionEnabled:  false,
     frictionAmount:   0.97,
-
-    // --- Wind ---
-    // Constant horizontal acceleration (positive = rightward)
     windEnabled:      false,
     windStrength:     0.04,
-
-    // --- Spiral ---
-    // Rotates the velocity vector by a small angle each frame
     spiralEnabled:    false,
-    spiralSpeed:      0.04,   // Radians per frame
+    spiralSpeed:      0.04,
+  },
+
+  /* ---- Visuals (NEW in Branch 4) ---- */
+  visuals: {
+
+    // --- Motion trail ---
+    // Instead of clearing canvas fully, paint a semi-transparent
+    // black rect each frame — old particles "ghost" into a trail.
+    // trailAlpha: 1.0 = full clear (no trail), 0.1 = long trail
+    trailEnabled:     false,
+    trailAlpha:       0.18,
+
+    // --- Glow ---
+    // Uses canvas shadowBlur to paint a soft halo around each particle.
+    glowEnabled:      false,
+    glowBlur:         18,       // shadowBlur radius in px
+    glowAlpha:        0.8,      // Glow opacity (separate from particle opacity)
+
+    // --- Gradient fill ---
+    // Each particle is filled with a radial gradient instead of flat color.
+    // Center: full color. Edge: transparent.
+    gradientEnabled:  false,
+
+    // --- Opacity curve ---
+    // 'linear'  — default, fades steadily
+    // 'easeIn'  — stays bright, drops fast at end
+    // 'easeOut' — fades fast at start, holds near end
+    // 'pulse'   — oscillates opacity over lifetime
+    opacityCurve:     'linear',
+
+    // --- Blend mode ---
+    // 'source-over' = normal (default)
+    // 'lighter'     = additive — particles add light where they overlap
+    // 'screen'      = like lighter but softer — great for neon
+    blendMode:        'source-over',
   },
 };
 
